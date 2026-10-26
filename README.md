@@ -10,7 +10,7 @@ release**. That includes problems in files the PR didn't touch.
 ./pr-video.sh https://github.com/OWNER/REPO/pull/123 review.mp4
 ```
 
-The output is a 1920×1080, 30 fps MP4 with no audio, usually 2–5 minutes long.
+The output is a 1280×720, 30 fps MP4 with no audio, usually 2–5 minutes long.
 
 ## How it works
 
@@ -49,6 +49,7 @@ Step kinds and their colours:
 | env var | effect |
 |---|---|
 | `PR_VIDEO_MODEL` | model passed to `claude -p` |
+| `PR_VIDEO_HEIGHT=1080` | render at 1080p instead of the default 720p (also applies to the QA stills) |
 | `PR_VIDEO_PROBE=1` | lets Claude `curl` the project's live hosts, to say whether the change is deployed and behaves as claimed. It is off by default. |
 | `PR_VIDEO_WORK=dir` | reuse a work directory. If `spec.json` already exists there, Claude refines it instead of starting over. |
 
