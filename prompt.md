@@ -122,14 +122,14 @@ Fill in `{{WORK}}/spec.json`:
    - the notes fit the panel
 3. Iterate until all of that is right. Do not render the video; the caller does that.
 
-## 4. Final message
-Your final message is posted verbatim as a comment on the pull request, directly below the
-video, so write it for the PR's reviewers in GitHub Markdown. No preamble, and no headings
-above `###`:
+## 4. Written review
+Write `{{WORK}}/review.md`. It is posted verbatim as a comment on the pull request, directly
+below the video, so write it for the PR's reviewers in GitHub Markdown. No preamble, and no
+headings above `###`:
 - one or two sentences of overall assessment
 - `### Findings`: one bullet per finding, highest severity first. Each starts with
   **Fix before release**, **Decide** or **Check**, names `file:line` and the concrete
   action, and says what evidence it rests on.
 - `### Not verified`: anything you could not confirm (omit the section if there is none)
 
-Write nothing else after it.
+Your final message is not posted anywhere; end with one line saying the spec and review are done.

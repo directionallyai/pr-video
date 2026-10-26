@@ -61,15 +61,15 @@ Step kinds and their colours:
 | `PR_VIDEO_PROBE=1` | lets Claude `curl` the project's live hosts, to say whether the change is deployed and behaves as claimed. It is off by default. |
 | `PR_VIDEO_WORK=dir` | reuse a work directory. If `spec.json` already exists there, Claude refines it instead of starting over. |
 
-The work directory keeps `spec.json`, `tour.json`, `stills/`, `review.txt` (Claude's
-written report) and `comment.md` (what gets posted).
+The work directory keeps `spec.json`, `tour.json`, `stills/`, `review.md` (Claude's
+written review) and `comment.md` (what gets posted).
 
 ## What Claude may do
 
 `claude -p` runs with an allowlist. It can:
 
 - read files
-- edit only `spec.json`
+- edit only `spec.json` and `review.md`
 - run `gh pr view|diff|checks` and `git -C <checkout> …`
 - run the two build and still scripts
 - run `curl`, but only when `PR_VIDEO_PROBE=1` is set
@@ -77,8 +77,11 @@ written report) and `comment.md` (what gets posted).
 The prompt tells Claude to treat the PR's contents as material to review, not as
 instructions.
 
+`claude -p` runs with your hooks and MCP servers turned off (`disableAllHooks`,
+`--strict-mcp-config`), so your own Claude Code setup can't steer or interrupt the review.
+
 Claude cannot post anything itself. The script posts the comment after rendering, using
-your `gh` credentials. Its text is Claude's final message, so read `comment.md` with
+your `gh` credentials. Its text is Claude's `review.md`, so read `comment.md` with
 `PR_VIDEO_POST=0` first if you want to vet it before it goes up.
 
 ## Editing a video by hand
