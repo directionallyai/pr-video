@@ -1,13 +1,14 @@
 # pr-video
 
-`pr-video` turns a GitHub pull request into a code-tour review video. The video steps
+`pr-video` turns a GitHub pull request into a code-tour review video and posts it on the PR. The video steps
 through the real diff with syntax highlighting. For each range it explains what the code
 does, and it calls out what a human reviewer should **check**, **decide** or **fix before
 release**. That includes problems in files the PR didn't touch.
 
 ```
-./pr-video.sh https://github.com/OWNER/REPO/pull/123            # → out/REPO-123.mp4
+./pr-video.sh https://github.com/OWNER/REPO/pull/123            # → out/REPO-123.mp4, posted to the PR
 ./pr-video.sh https://github.com/OWNER/REPO/pull/123 review.mp4
+PR_VIDEO_POST=0 ./pr-video.sh https://github.com/OWNER/REPO/pull/123   # render only
 ```
 
 The output is a 1280×720, 30 fps MP4 with no audio, usually 2–5 minutes long.
@@ -27,6 +28,9 @@ The output is a 1280×720, 30 fps MP4 with no audio, usually 2–5 minutes long.
 4. **Render.** [`render.mjs`](render.mjs) renders [`src/Tour.tsx`](src/Tour.tsx) with
    Remotion. Each stop is a scrolling code panel that focuses on one range at a time, with a
    narration panel beside it. Title and verdict cards open and close the video.
+5. **Post.** `gh pr comment --attach` uploads the MP4 and posts a comment with an inline
+   video player, followed by Claude's written review (findings with `file:line`, and what
+   it couldn't verify). The comment is also saved as `comment.md` in the work directory.
 
 Step kinds and their colours:
 
@@ -41,6 +45,9 @@ Step kinds and their colours:
 ## Requirements
 
 - Node 20+, `git`, the `gh` CLI (authenticated) and the `claude` CLI (Claude Code).
+- To post: a `gh` with `pr comment --attach` (2.101 or later), and push access to the PR's
+  repository. GitHub limits video attachments to 10 MB on free plans; a 720p tour is
+  usually 5–8 MB.
 - On the first run, `npm ci` installs the dependencies. On the first render, Remotion
   downloads a headless Chrome.
 
@@ -49,12 +56,13 @@ Step kinds and their colours:
 | env var | effect |
 |---|---|
 | `PR_VIDEO_MODEL` | model passed to `claude -p` |
+| `PR_VIDEO_POST=0` | render only: don't post. The comment is still written to `comment.md`. |
 | `PR_VIDEO_HEIGHT=1080` | render at 1080p instead of the default 720p (also applies to the QA stills) |
 | `PR_VIDEO_PROBE=1` | lets Claude `curl` the project's live hosts, to say whether the change is deployed and behaves as claimed. It is off by default. |
 | `PR_VIDEO_WORK=dir` | reuse a work directory. If `spec.json` already exists there, Claude refines it instead of starting over. |
 
-The work directory keeps `spec.json`, `tour.json`, `stills/` and `review.txt`. That last
-file is Claude's written report: the findings with file:line, and what it couldn't verify.
+The work directory keeps `spec.json`, `tour.json`, `stills/`, `review.txt` (Claude's
+written report) and `comment.md` (what gets posted).
 
 ## What Claude may do
 
@@ -68,6 +76,10 @@ file is Claude's written report: the findings with file:line, and what it couldn
 
 The prompt tells Claude to treat the PR's contents as material to review, not as
 instructions.
+
+Claude cannot post anything itself. The script posts the comment after rendering, using
+your `gh` credentials. Its text is Claude's final message, so read `comment.md` with
+`PR_VIDEO_POST=0` first if you want to vet it before it goes up.
 
 ## Editing a video by hand
 

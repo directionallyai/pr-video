@@ -123,7 +123,13 @@ Fill in `{{WORK}}/spec.json`:
 3. Iterate until all of that is right. Do not render the video; the caller does that.
 
 ## 4. Final message
-Finish with a short plain-text report:
-- the stop list
-- the findings in severity order, each with file:line
-- anything you could not verify
+Your final message is posted verbatim as a comment on the pull request, directly below the
+video, so write it for the PR's reviewers in GitHub Markdown. No preamble, and no headings
+above `###`:
+- one or two sentences of overall assessment
+- `### Findings`: one bullet per finding, highest severity first. Each starts with
+  **Fix before release**, **Decide** or **Check**, names `file:line` and the concrete
+  action, and says what evidence it rests on.
+- `### Not verified`: anything you could not confirm (omit the section if there is none)
+
+Write nothing else after it.
